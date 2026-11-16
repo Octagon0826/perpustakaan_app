@@ -1,5 +1,5 @@
-
 import 'package:flutter/material.dart';
+
 import '../models/book_model.dart';
 import '../core/routes/app_router.dart';
 
@@ -15,21 +15,35 @@ class BookCard extends StatelessWidget {
     required this.onDelete,
   });
 
+  Color _stockColor(int stock) {
+    if (stock == 0) return Colors.red;
+    if (stock <= 5) return Colors.orange;
+    return Colors.green;
+  }
+
+  String _stockLabel(int stock) =>
+      stock == 0 ? 'Stok: 0 (Habis)' : 'Stok: $stock';
   @override
   Widget build(BuildContext context) {
     return Card(
       child: ListTile(
-        leading: CircleAvatar(
-          child: Text(book.id.toString()),
+        leading: CircleAvatar(child: Text(book.id.toString())),
+        title: Text(book.title, maxLines: 1, overflow: TextOverflow.ellipsis),
+        subtitle: Text.rich(
+          TextSpan(
+            children: [
+              TextSpan(text: '${book.author} · ${book.publishedYear} · '),
+              TextSpan(
+                text: _stockLabel(book.stock),
+                style: TextStyle(
+                  color: _stockColor(book.stock),
+                  fontWeight: FontWeight.bold,
+                ),
+              ),
+            ],
+          ),
         ),
-        title: Text(
-          book.title,
-          maxLines: 1,
-          overflow: TextOverflow.ellipsis,
-        ),
-        subtitle: Text(
-          '${book.author} · ${book.publishedYear} · Stok: ${book.stock}',
-        ),
+
         trailing: Row(
           mainAxisSize: MainAxisSize.min,
           children: [
@@ -45,11 +59,8 @@ class BookCard extends StatelessWidget {
             ),
           ],
         ),
-        onTap: () => Navigator.pushNamed(
-          context,
-          AppRoutes.bookDetail,
-          arguments: book,
-        ),
+        onTap: () =>
+            Navigator.pushNamed(context, AppRoutes.bookDetail, arguments: book),
       ),
     );
   }
